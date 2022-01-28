@@ -1,0 +1,44 @@
+{
+  "name": "Client",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "one-to-one",
+      "otherEntityName": "kyc",
+      "otherEntityRelationshipName": "client",
+      "relationshipName": "kyc",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "compte",
+      "otherEntityRelationshipName": "client",
+      "relationshipName": "comptes"
+    },
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "agence",
+      "otherEntityRelationshipName": "client",
+      "relationshipName": "agence"
+    }
+  ],
+  "entityTableName": "client",
+  "dto": "no",
+  "pagination": "no",
+  "service": "no",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "applications": ["accountApi"],
+  "microserviceName": "accountApi",
+  "clientRootFolder": "accountApi",
+  "databaseType": "sql",
+  "changelogDate": "20220117230000"
+}

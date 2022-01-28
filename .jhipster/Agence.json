@@ -1,0 +1,44 @@
+{
+  "name": "Agence",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "address",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "ville",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "reference",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "plafondMontant",
+      "fieldType": "Double"
+    },
+    {
+      "fieldName": "plafondTransaction",
+      "fieldType": "Integer"
+    }
+  ],
+  "relationships": [],
+  "entityTableName": "agence",
+  "dto": "no",
+  "pagination": "no",
+  "service": "no",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "applications": ["accountApi"],
+  "microserviceName": "accountApi",
+  "clientRootFolder": "accountApi",
+  "databaseType": "sql",
+  "changelogDate": "20220117225900"
+}

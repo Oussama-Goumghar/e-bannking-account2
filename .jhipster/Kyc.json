@@ -1,0 +1,68 @@
+{
+  "name": "Kyc",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "titre",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "nom",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "prenom",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "typeIdentite",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "numIdentite",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "validateTimeIdentite",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "profession",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "nationalite",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "address",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "gsm",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "email",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [],
+  "entityTableName": "kyc",
+  "dto": "no",
+  "pagination": "no",
+  "service": "no",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "applications": ["accountApi"],
+  "microserviceName": "accountApi",
+  "clientRootFolder": "accountApi",
+  "databaseType": "sql",
+  "changelogDate": "20220117225700"
+}

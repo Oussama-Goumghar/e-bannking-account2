@@ -1,0 +1,54 @@
+{
+  "name": "Agent",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "nom",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "prenom",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "login",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "password",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "one-to-one",
+      "otherEntityName": "compte",
+      "otherEntityRelationshipName": "agent",
+      "relationshipName": "compteAgent",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "agence",
+      "otherEntityRelationshipName": "agent",
+      "relationshipName": "agence"
+    }
+  ],
+  "entityTableName": "agent",
+  "dto": "no",
+  "pagination": "no",
+  "service": "no",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "applications": ["accountApi"],
+  "microserviceName": "accountApi",
+  "clientRootFolder": "accountApi",
+  "databaseType": "sql",
+  "changelogDate": "20220117230200"
+}
