@@ -34,6 +34,11 @@ public class Client implements Serializable {
     @JsonIgnoreProperties(value = { "client" }, allowSetters = true)
     private Set<Compte> comptes = new HashSet<>();
 
+    @OneToMany(mappedBy = "client")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "client" }, allowSetters = true)
+    private Set<Benificiaire> benificiaires = new HashSet<>();
+
     @ManyToOne
     private Agence agence;
 
@@ -46,6 +51,14 @@ public class Client implements Serializable {
     public Client id(Long id) {
         this.setId(id);
         return this;
+    }
+
+    public Set<Benificiaire> getBenificiaires() {
+        return benificiaires;
+    }
+
+    public void setBenificiaires(Set<Benificiaire> benificiaires) {
+        this.benificiaires = benificiaires;
     }
 
     public void setId(Long id) {

@@ -26,6 +26,18 @@ public class Benificiaire implements Serializable {
     @JoinColumn(unique = true)
     private Kyc kyc;
 
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private Client client;
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() {

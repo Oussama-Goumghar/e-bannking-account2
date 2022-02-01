@@ -30,6 +30,7 @@
     <include file="config/liquibase/changelog/20220117230200_added_entity_constraints_Agent.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20220117230300_added_entity_constraints_Passager.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20220117230400_added_entity_constraints_Benificiaire.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220201180419_changelog.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
 </databaseChangeLog>
