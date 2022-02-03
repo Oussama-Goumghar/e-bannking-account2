@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface AgenceRepository extends JpaRepository<Agence, Long> {}
+public interface AgenceRepository extends JpaRepository<Agence, Long> {
+    public Agence findByReference(String ref);
+}

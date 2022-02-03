@@ -2,6 +2,7 @@ package com.ensa.web.rest;
 
 import com.ensa.domain.Agence;
 import com.ensa.repository.AgenceRepository;
+import com.ensa.service.AgenceService;
 import com.ensa.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,6 +13,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,11 +36,9 @@ public class AgenceResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
-    private final AgenceRepository agenceRepository;
+    @Autowired
+    private AgenceService agenceService;
 
-    public AgenceResource(AgenceRepository agenceRepository) {
-        this.agenceRepository = agenceRepository;
-    }
 
     /**
      * {@code POST  /agences} : Create a new agence.
@@ -50,10 +50,10 @@ public class AgenceResource {
     @PostMapping("/agences")
     public ResponseEntity<Agence> createAgence(@Valid @RequestBody Agence agence) throws URISyntaxException {
         log.debug("REST request to save Agence : {}", agence);
-        if (agence.getId() != null) {
-            throw new BadRequestAlertException("A new agence cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        Agence result = agenceRepository.save(agence);
+//        if (agence.getId() != null) {
+//            throw new BadRequestAlertException("A new agence cannot already have an ID", ENTITY_NAME, "idexists");
+//        }
+        Agence result = agenceService.saveAgence(agence);
         return ResponseEntity
             .created(new URI("/api/agences/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
@@ -83,11 +83,11 @@ public class AgenceResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!agenceRepository.existsById(id)) {
+        if (!agenceService.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Agence result = agenceRepository.save(agence);
+        Agence result = agenceService.updateAgence(agence);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, agence.getId().toString()))
@@ -118,37 +118,16 @@ public class AgenceResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!agenceRepository.existsById(id)) {
+        if (!agenceService.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Optional<Agence> result = agenceRepository
-            .findById(agence.getId())
-            .map(existingAgence -> {
-                if (agence.getAddress() != null) {
-                    existingAgence.setAddress(agence.getAddress());
-                }
-                if (agence.getVille() != null) {
-                    existingAgence.setVille(agence.getVille());
-                }
-                if (agence.getReference() != null) {
-                    existingAgence.setReference(agence.getReference());
-                }
-                if (agence.getPlafondMontant() != null) {
-                    existingAgence.setPlafondMontant(agence.getPlafondMontant());
-                }
-                if (agence.getPlafondTransaction() != null) {
-                    existingAgence.setPlafondTransaction(agence.getPlafondTransaction());
-                }
+        Agence result = agenceService.updateAgencePartial(agence);
 
-                return existingAgence;
-            })
-            .map(agenceRepository::save);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, agence.getId().toString())
-        );
+        return ResponseEntity
+            .ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, agence.getId().toString()))
+            .body(result);
     }
 
     /**
@@ -159,7 +138,7 @@ public class AgenceResource {
     @GetMapping("/agences")
     public List<Agence> getAllAgences() {
         log.debug("REST request to get all Agences");
-        return agenceRepository.findAll();
+        return agenceService.getAllAgences();
     }
 
     /**
@@ -171,9 +150,24 @@ public class AgenceResource {
     @GetMapping("/agences/{id}")
     public ResponseEntity<Agence> getAgence(@PathVariable Long id) {
         log.debug("REST request to get Agence : {}", id);
-        Optional<Agence> agence = agenceRepository.findById(id);
+        Optional<Agence> agence = agenceService.getAgenceById(id);
         return ResponseUtil.wrapOrNotFound(agence);
     }
+
+
+    /**
+     * {@code GET  /agences/:ref} : get the "reference" agence.
+     *
+     * @param ref the id of the agence to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the agence, or with status {@code 404 (Not Found)}.
+     */
+    @GetMapping("/agences/reference/{ref}")
+    public ResponseEntity<Agence> getAgenceByRef(@PathVariable String ref) {
+        log.debug("REST request to get Agence : {}", ref);
+        Optional<Agence> agence = Optional.ofNullable(agenceService.getAgenceByRef(ref));
+        return ResponseUtil.wrapOrNotFound(agence);
+    }
+
 
     /**
      * {@code DELETE  /agences/:id} : delete the "id" agence.
@@ -184,7 +178,7 @@ public class AgenceResource {
     @DeleteMapping("/agences/{id}")
     public ResponseEntity<Void> deleteAgence(@PathVariable Long id) {
         log.debug("REST request to delete Agence : {}", id);
-        agenceRepository.deleteById(id);
+        agenceService.deleteAgence(id);
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
