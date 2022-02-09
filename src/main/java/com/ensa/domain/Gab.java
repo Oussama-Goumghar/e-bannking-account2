@@ -16,7 +16,7 @@ public class Gab implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @NotNull
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

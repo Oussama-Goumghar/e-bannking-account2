@@ -2,6 +2,7 @@ package com.ensa.web.rest;
 
 import com.ensa.domain.Gab;
 import com.ensa.repository.GabRepository;
+import com.ensa.service.GabService;
 import com.ensa.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,6 +13,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,11 +36,10 @@ public class GabResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
-    private final GabRepository gabRepository;
+    @Autowired
+    private GabService gabService;
 
-    public GabResource(GabRepository gabRepository) {
-        this.gabRepository = gabRepository;
-    }
+
 
     /**
      * {@code POST  /gabs} : Create a new gab.
@@ -50,10 +51,10 @@ public class GabResource {
     @PostMapping("/gabs")
     public ResponseEntity<Gab> createGab(@Valid @RequestBody Gab gab) throws URISyntaxException {
         log.debug("REST request to save Gab : {}", gab);
-        if (gab.getId() != null) {
-            throw new BadRequestAlertException("A new gab cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        Gab result = gabRepository.save(gab);
+//        if (gab.getId() != null) {
+//            throw new BadRequestAlertException("A new gab cannot already have an ID", ENTITY_NAME, "idexists");
+//        }
+        Gab result = gabService.saveGab(gab);
         return ResponseEntity
             .created(new URI("/api/gabs/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
@@ -81,11 +82,11 @@ public class GabResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!gabRepository.existsById(id)) {
+        if (!gabService.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Gab result = gabRepository.save(gab);
+        Gab result = gabService.updateGab(gab);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, gab.getId().toString()))
@@ -114,28 +115,16 @@ public class GabResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!gabRepository.existsById(id)) {
+        if (!gabService.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Optional<Gab> result = gabRepository
-            .findById(gab.getId())
-            .map(existingGab -> {
-                if (gab.getFond() != null) {
-                    existingGab.setFond(gab.getFond());
-                }
-                if (gab.getAddress() != null) {
-                    existingGab.setAddress(gab.getAddress());
-                }
+        Gab result = gabService.updateGabPartial(gab);
 
-                return existingGab;
-            })
-            .map(gabRepository::save);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, gab.getId().toString())
-        );
+        return ResponseEntity
+            .ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, gab.getId().toString()))
+            .body(result);
     }
 
     /**
@@ -146,7 +135,7 @@ public class GabResource {
     @GetMapping("/gabs")
     public List<Gab> getAllGabs() {
         log.debug("REST request to get all Gabs");
-        return gabRepository.findAll();
+        return gabService.getAllGabs();
     }
 
     /**
@@ -158,7 +147,7 @@ public class GabResource {
     @GetMapping("/gabs/{id}")
     public ResponseEntity<Gab> getGab(@PathVariable Long id) {
         log.debug("REST request to get Gab : {}", id);
-        Optional<Gab> gab = gabRepository.findById(id);
+        Optional<Gab> gab = Optional.ofNullable(gabService.getGabById(id));
         return ResponseUtil.wrapOrNotFound(gab);
     }
 
@@ -171,7 +160,7 @@ public class GabResource {
     @DeleteMapping("/gabs/{id}")
     public ResponseEntity<Void> deleteGab(@PathVariable Long id) {
         log.debug("REST request to delete Gab : {}", id);
-        gabRepository.deleteById(id);
+        gabService.deleteGab(id);
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))

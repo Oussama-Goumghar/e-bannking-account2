@@ -156,7 +156,7 @@ public class AgenceResource {
 
 
     /**
-     * {@code GET  /agences/:ref} : get the "reference" agence.
+     * {@code GET  /agences/reference/:ref} : get the "reference" agence.
      *
      * @param ref the id of the agence to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the agence, or with status {@code 404 (Not Found)}.

@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface CompteRepository extends JpaRepository<Compte, Long> {}
+public interface CompteRepository extends JpaRepository<Compte, Long> {
+    public Compte findByRib(String rib);
+}

@@ -2,6 +2,7 @@ package com.ensa.web.rest;
 
 import com.ensa.domain.Compte;
 import com.ensa.repository.CompteRepository;
+import com.ensa.service.CompteService;
 import com.ensa.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,6 +13,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,11 +36,9 @@ public class CompteResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
-    private final CompteRepository compteRepository;
+    @Autowired
+    private CompteService compteService;
 
-    public CompteResource(CompteRepository compteRepository) {
-        this.compteRepository = compteRepository;
-    }
 
     /**
      * {@code POST  /comptes} : Create a new compte.
@@ -50,10 +50,7 @@ public class CompteResource {
     @PostMapping("/comptes")
     public ResponseEntity<Compte> createCompte(@Valid @RequestBody Compte compte) throws URISyntaxException {
         log.debug("REST request to save Compte : {}", compte);
-        if (compte.getId() != null) {
-            throw new BadRequestAlertException("A new compte cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        Compte result = compteRepository.save(compte);
+        Compte result = compteService.saveCompte(compte);
         return ResponseEntity
             .created(new URI("/api/comptes/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
@@ -83,11 +80,11 @@ public class CompteResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!compteRepository.existsById(id)) {
+        if (!compteService.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Compte result = compteRepository.save(compte);
+        Compte result = compteService.updateCompte(compte);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, compte.getId().toString()))
@@ -118,34 +115,16 @@ public class CompteResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!compteRepository.existsById(id)) {
+        if (!compteService.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Optional<Compte> result = compteRepository
-            .findById(compte.getId())
-            .map(existingCompte -> {
-                if (compte.getSolde() != null) {
-                    existingCompte.setSolde(compte.getSolde());
-                }
-                if (compte.getDateCreation() != null) {
-                    existingCompte.setDateCreation(compte.getDateCreation());
-                }
-                if (compte.getStatus() != null) {
-                    existingCompte.setStatus(compte.getStatus());
-                }
-                if (compte.getRib() != null) {
-                    existingCompte.setRib(compte.getRib());
-                }
+        Compte compte1 = compteService.updateComptePartial(compte);
 
-                return existingCompte;
-            })
-            .map(compteRepository::save);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, compte.getId().toString())
-        );
+        return ResponseEntity
+            .ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, compte.getId().toString()))
+            .body(compte1);
     }
 
     /**
@@ -156,7 +135,7 @@ public class CompteResource {
     @GetMapping("/comptes")
     public List<Compte> getAllComptes() {
         log.debug("REST request to get all Comptes");
-        return compteRepository.findAll();
+        return compteService.getAllComptes();
     }
 
     /**
@@ -166,11 +145,26 @@ public class CompteResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the compte, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/comptes/{id}")
-    public ResponseEntity<Compte> getCompte(@PathVariable Long id) {
+    public ResponseEntity<Compte> getCompteById(@PathVariable Long id) {
         log.debug("REST request to get Compte : {}", id);
-        Optional<Compte> compte = compteRepository.findById(id);
+        Optional<Compte> compte = compteService.getCompteById(id);
         return ResponseUtil.wrapOrNotFound(compte);
     }
+
+
+    /**
+     * {@code GET  /comptes/rib/:rib} : get the "rib" compte.
+     *
+     * @param rib the rib of the compte to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the compte, or with status {@code 404 (Not Found)}.
+     */
+    @GetMapping("/comptes/rib/{rib}")
+    public ResponseEntity<Compte> getCompteByRib(@PathVariable String rib) {
+        log.debug("REST request to get Compte : {}", rib);
+        Optional<Compte> compte = Optional.ofNullable(compteService.getCompteByRib(rib));
+        return (ResponseEntity<Compte>) ResponseUtil.wrapOrNotFound(compte);
+    }
+
 
     /**
      * {@code DELETE  /comptes/:id} : delete the "id" compte.
@@ -179,12 +173,28 @@ public class CompteResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/comptes/{id}")
-    public ResponseEntity<Void> deleteCompte(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCompteById(@PathVariable Long id) {
         log.debug("REST request to delete Compte : {}", id);
-        compteRepository.deleteById(id);
+        compteService.deleteById(id);
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
+    }
+
+    /**
+     * {@code DELETE  /comptes/rib/:rib} : delete the "rib" compte.
+     *
+     * @param rib the id of the compte to delete.
+     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
+     */
+    @DeleteMapping("/comptes/rib/{rib}")
+    public ResponseEntity<Void> deleteCompteByRib(@PathVariable String rib) {
+        log.debug("REST request to delete Compte : {}", rib);
+        compteService.deleteByRib(rib);
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, rib.toString()))
             .build();
     }
 }
