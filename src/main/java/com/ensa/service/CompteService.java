@@ -1,6 +1,7 @@
 package com.ensa.service;
 
 
+import com.ensa.domain.Client;
 import com.ensa.domain.Compte;
 import com.ensa.repository.CompteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +75,8 @@ public class CompteService {
         return compteRepository.findByRib(rib);
     }
 
+    public List<Compte> getComptesByClient(Client client){return compteRepository.findByClient(client);}
+
     public boolean existsById(Long id)
     {
         return compteRepository.existsById(id);
@@ -89,5 +92,19 @@ public class CompteService {
     {
         Compte compte = compteRepository.findByRib(rib);
         compteRepository.delete(compte);
+    }
+
+    public void crediterCompte(Long id,Double montant)
+    {
+        Compte compte = compteRepository.findById(id).orElseThrow();
+        compte.setSolde(compte.getSolde() + montant);
+        compteRepository.save(compte);
+    }
+
+    public void debiterCompte(Long id,Double montant)
+    {
+        Compte compte = compteRepository.findById(id).orElseThrow();
+        compte.setSolde(compte.getSolde() - montant);
+        compteRepository.save(compte);
     }
 }

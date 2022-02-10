@@ -2,6 +2,7 @@ package com.ensa.web.rest;
 
 import com.ensa.domain.Kyc;
 import com.ensa.repository.KycRepository;
+import com.ensa.service.KycService;
 import com.ensa.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,6 +13,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,11 +36,9 @@ public class KycResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
-    private final KycRepository kycRepository;
+    @Autowired
+    private KycService kycService;
 
-    public KycResource(KycRepository kycRepository) {
-        this.kycRepository = kycRepository;
-    }
 
     /**
      * {@code POST  /kycs} : Create a new kyc.
@@ -53,7 +53,7 @@ public class KycResource {
         if (kyc.getId() != null) {
             throw new BadRequestAlertException("A new kyc cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        Kyc result = kycRepository.save(kyc);
+        Kyc result = kycService.saveKyc(kyc);
         return ResponseEntity
             .created(new URI("/api/kycs/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
@@ -81,11 +81,11 @@ public class KycResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!kycRepository.existsById(id)) {
+        if (!kycService.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Kyc result = kycRepository.save(kyc);
+        Kyc result = kycService.updateKyc(kyc);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, kyc.getId().toString()))
@@ -114,55 +114,16 @@ public class KycResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!kycRepository.existsById(id)) {
+        if (!kycService.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Optional<Kyc> result = kycRepository
-            .findById(kyc.getId())
-            .map(existingKyc -> {
-                if (kyc.getTitre() != null) {
-                    existingKyc.setTitre(kyc.getTitre());
-                }
-                if (kyc.getNom() != null) {
-                    existingKyc.setNom(kyc.getNom());
-                }
-                if (kyc.getPrenom() != null) {
-                    existingKyc.setPrenom(kyc.getPrenom());
-                }
-                if (kyc.getTypeIdentite() != null) {
-                    existingKyc.setTypeIdentite(kyc.getTypeIdentite());
-                }
-                if (kyc.getNumIdentite() != null) {
-                    existingKyc.setNumIdentite(kyc.getNumIdentite());
-                }
-                if (kyc.getValidateTimeIdentite() != null) {
-                    existingKyc.setValidateTimeIdentite(kyc.getValidateTimeIdentite());
-                }
-                if (kyc.getProfession() != null) {
-                    existingKyc.setProfession(kyc.getProfession());
-                }
-                if (kyc.getNationalite() != null) {
-                    existingKyc.setNationalite(kyc.getNationalite());
-                }
-                if (kyc.getAddress() != null) {
-                    existingKyc.setAddress(kyc.getAddress());
-                }
-                if (kyc.getGsm() != null) {
-                    existingKyc.setGsm(kyc.getGsm());
-                }
-                if (kyc.getEmail() != null) {
-                    existingKyc.setEmail(kyc.getEmail());
-                }
+        Kyc result = kycService.updateKycPartial(kyc);
+        return ResponseEntity
+            .ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, kyc.getId().toString()))
+            .body(result);
 
-                return existingKyc;
-            })
-            .map(kycRepository::save);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, kyc.getId().toString())
-        );
     }
 
     /**
@@ -173,7 +134,7 @@ public class KycResource {
     @GetMapping("/kycs")
     public List<Kyc> getAllKycs() {
         log.debug("REST request to get all Kycs");
-        return kycRepository.findAll();
+        return kycService.getAllKyc();
     }
 
     /**
@@ -185,7 +146,7 @@ public class KycResource {
     @GetMapping("/kycs/{id}")
     public ResponseEntity<Kyc> getKyc(@PathVariable Long id) {
         log.debug("REST request to get Kyc : {}", id);
-        Optional<Kyc> kyc = kycRepository.findById(id);
+        Optional<Kyc> kyc = Optional.ofNullable(kycService.getKycById(id));
         return ResponseUtil.wrapOrNotFound(kyc);
     }
 
@@ -198,7 +159,7 @@ public class KycResource {
     @DeleteMapping("/kycs/{id}")
     public ResponseEntity<Void> deleteKyc(@PathVariable Long id) {
         log.debug("REST request to delete Kyc : {}", id);
-        kycRepository.deleteById(id);
+        kycService.deleteKyc(id);
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))

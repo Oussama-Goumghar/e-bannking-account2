@@ -1,23 +1,23 @@
 package com.ensa.web.rest;
 
+import com.ensa.domain.Agence;
 import com.ensa.domain.Agent;
-import com.ensa.repository.AgentRepository;
+import com.ensa.service.AgentService;
 import com.ensa.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
-import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link com.ensa.domain.Agent}.
@@ -34,11 +34,10 @@ public class AgentResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
-    private final AgentRepository agentRepository;
+    @Autowired
+    private AgentService agentService;
 
-    public AgentResource(AgentRepository agentRepository) {
-        this.agentRepository = agentRepository;
-    }
+
 
     /**
      * {@code POST  /agents} : Create a new agent.
@@ -53,7 +52,7 @@ public class AgentResource {
         if (agent.getId() != null) {
             throw new BadRequestAlertException("A new agent cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        Agent result = agentRepository.save(agent);
+        Agent result = agentService.saveAgent(agent);
         return ResponseEntity
             .created(new URI("/api/agents/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
@@ -81,11 +80,11 @@ public class AgentResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!agentRepository.existsById(id)) {
+        if (!agentService.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Agent result = agentRepository.save(agent);
+        Agent result = agentService.updateAgent(agent);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, agent.getId().toString()))
@@ -104,7 +103,7 @@ public class AgentResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/agents/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<Agent> partialUpdateAgent(
+    public ResponseEntity partialUpdateAgent(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody Agent agent
     ) throws URISyntaxException {
@@ -116,34 +115,15 @@ public class AgentResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!agentRepository.existsById(id)) {
+        if (!agentService.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Optional<Agent> result = agentRepository
-            .findById(agent.getId())
-            .map(existingAgent -> {
-                if (agent.getNom() != null) {
-                    existingAgent.setNom(agent.getNom());
-                }
-                if (agent.getPrenom() != null) {
-                    existingAgent.setPrenom(agent.getPrenom());
-                }
-                if (agent.getLogin() != null) {
-                    existingAgent.setLogin(agent.getLogin());
-                }
-                if (agent.getPassword() != null) {
-                    existingAgent.setPassword(agent.getPassword());
-                }
-
-                return existingAgent;
-            })
-            .map(agentRepository::save);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, agent.getId().toString())
-        );
+        Agent result = agentService.updateAgentPartial(agent);
+        return ResponseEntity
+            .ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, agent.getId().toString()))
+            .body(result);
     }
 
     /**
@@ -154,7 +134,7 @@ public class AgentResource {
     @GetMapping("/agents")
     public List<Agent> getAllAgents() {
         log.debug("REST request to get all Agents");
-        return agentRepository.findAll();
+        return agentService.getAllAgents();
     }
 
     /**
@@ -164,10 +144,23 @@ public class AgentResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the agent, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/agents/{id}")
-    public ResponseEntity<Agent> getAgent(@PathVariable Long id) {
+    public Agent getAgent(@PathVariable Long id) {
         log.debug("REST request to get Agent : {}", id);
-        Optional<Agent> agent = agentRepository.findById(id);
-        return ResponseUtil.wrapOrNotFound(agent);
+
+        return agentService.getById(id);
+    }
+
+    /**
+     * {@code GET  /agents/:agence} : get the "agence id" agent.
+     *
+     * @param agence the id of the agent to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the agent, or with status {@code 404 (Not Found)}.
+     */
+    @GetMapping("/agents/{agence}")
+    public List<Agent> getAgentByAgence(@PathVariable Agence agence) {
+        log.debug("REST request to get Agent : {}", agence);
+
+        return agentService.getByAgence(agence);
     }
 
     /**
@@ -179,10 +172,7 @@ public class AgentResource {
     @DeleteMapping("/agents/{id}")
     public ResponseEntity<Void> deleteAgent(@PathVariable Long id) {
         log.debug("REST request to delete Agent : {}", id);
-        agentRepository.deleteById(id);
-        return ResponseEntity
-            .noContent()
-            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
-            .build();
+        return agentService.deleteAgent(id);
+
     }
 }
