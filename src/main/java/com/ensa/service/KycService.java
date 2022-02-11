@@ -71,4 +71,8 @@ public class KycService {
     public boolean existsById(Long id) {
         return kycRepository.existsById(id);
     }
+
+    public Kyc getByNumIdentite(String identite){
+        return kycRepository.findByNumIdentite(identite);
+    }
 }

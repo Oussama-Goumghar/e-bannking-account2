@@ -20,9 +20,9 @@ public class AgenceService {
         return agenceRepository.save(agence);
     }
 
-    public void deleteAgence(Long id)
+    public void deleteAgence(String refAgen)
     {
-        Agence agence = agenceRepository.findById(id).orElseThrow(IllegalStateException::new);
+        Agence agence = agenceRepository.findByReference(refAgen);
         agenceRepository.delete(agence);
     }
 

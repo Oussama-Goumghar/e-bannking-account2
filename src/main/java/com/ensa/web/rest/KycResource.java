@@ -40,13 +40,7 @@ public class KycResource {
     private KycService kycService;
 
 
-    /**
-     * {@code POST  /kycs} : Create a new kyc.
-     *
-     * @param kyc the kyc to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new kyc, or with status {@code 400 (Bad Request)} if the kyc has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
+
     @PostMapping("/kycs")
     public ResponseEntity<Kyc> createKyc(@Valid @RequestBody Kyc kyc) throws URISyntaxException {
         log.debug("REST request to save Kyc : {}", kyc);
@@ -60,31 +54,10 @@ public class KycResource {
             .body(result);
     }
 
-    /**
-     * {@code PUT  /kycs/:id} : Updates an existing kyc.
-     *
-     * @param id the id of the kyc to save.
-     * @param kyc the kyc to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated kyc,
-     * or with status {@code 400 (Bad Request)} if the kyc is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the kyc couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PutMapping("/kycs/{id}")
-    public ResponseEntity<Kyc> updateKyc(@PathVariable(value = "id", required = false) final Long id, @Valid @RequestBody Kyc kyc)
+
+    @PutMapping("/kycs")
+    public ResponseEntity<Kyc> updateKyc( @Valid @RequestBody Kyc kyc)
         throws URISyntaxException {
-        log.debug("REST request to update Kyc : {}, {}", id, kyc);
-        if (kyc.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, kyc.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!kycService.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
         Kyc result = kycService.updateKyc(kyc);
         return ResponseEntity
             .ok()
@@ -92,32 +65,10 @@ public class KycResource {
             .body(result);
     }
 
-    /**
-     * {@code PATCH  /kycs/:id} : Partial updates given fields of an existing kyc, field will ignore if it is null
-     *
-     * @param id the id of the kyc to save.
-     * @param kyc the kyc to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated kyc,
-     * or with status {@code 400 (Bad Request)} if the kyc is not valid,
-     * or with status {@code 404 (Not Found)} if the kyc is not found,
-     * or with status {@code 500 (Internal Server Error)} if the kyc couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PatchMapping(value = "/kycs/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<Kyc> partialUpdateKyc(@PathVariable(value = "id", required = false) final Long id, @NotNull @RequestBody Kyc kyc)
+
+    @PatchMapping(value = "/kycs", consumes = { "application/json", "application/merge-patch+json" })
+    public ResponseEntity<Kyc> partialUpdateKyc( @NotNull @RequestBody Kyc kyc)
         throws URISyntaxException {
-        log.debug("REST request to partial update Kyc partially : {}, {}", id, kyc);
-        if (kyc.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, kyc.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!kycService.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
         Kyc result = kycService.updateKycPartial(kyc);
         return ResponseEntity
             .ok()
@@ -126,23 +77,14 @@ public class KycResource {
 
     }
 
-    /**
-     * {@code GET  /kycs} : get all the kycs.
-     *
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of kycs in body.
-     */
+
     @GetMapping("/kycs")
     public List<Kyc> getAllKycs() {
         log.debug("REST request to get all Kycs");
         return kycService.getAllKyc();
     }
 
-    /**
-     * {@code GET  /kycs/:id} : get the "id" kyc.
-     *
-     * @param id the id of the kyc to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the kyc, or with status {@code 404 (Not Found)}.
-     */
+
     @GetMapping("/kycs/{id}")
     public ResponseEntity<Kyc> getKyc(@PathVariable Long id) {
         log.debug("REST request to get Kyc : {}", id);
@@ -150,12 +92,7 @@ public class KycResource {
         return ResponseUtil.wrapOrNotFound(kyc);
     }
 
-    /**
-     * {@code DELETE  /kycs/:id} : delete the "id" kyc.
-     *
-     * @param id the id of the kyc to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
-     */
+
     @DeleteMapping("/kycs/{id}")
     public ResponseEntity<Void> deleteKyc(@PathVariable Long id) {
         log.debug("REST request to delete Kyc : {}", id);

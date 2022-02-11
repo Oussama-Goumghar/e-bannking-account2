@@ -1,6 +1,7 @@
 package com.ensa.repository;
 
 import com.ensa.domain.Benificiaire;
+import com.ensa.domain.Kyc;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +10,6 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface BenificiaireRepository extends JpaRepository<Benificiaire, Long> {}
+public interface BenificiaireRepository extends JpaRepository<Benificiaire, Long> {
+    public Benificiaire findByKyc(Kyc kyc);
+}

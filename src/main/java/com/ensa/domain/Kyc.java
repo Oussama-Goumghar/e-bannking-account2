@@ -56,20 +56,8 @@ public class Kyc implements Serializable {
     @Column(name = "email")
     private String email;
 
-    public Kyc(String titre, String nom, String prenom, String typeIdentite, String numIdentite, LocalDate validateTimeIdentite, String profession, String nationalite, String address, String gsm, String email) {
-        this.titre = titre;
-        this.nom = nom;
-        this.prenom = prenom;
-        this.typeIdentite = typeIdentite;
-        this.numIdentite = numIdentite;
-        this.validateTimeIdentite = validateTimeIdentite;
-        this.profession = profession;
-        this.nationalite = nationalite;
-        this.address = address;
-        this.gsm = gsm;
-        this.email = email;
-    }
-// jhipster-needle-entity-add-field - JHipster will add fields here
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() {
         return this.id;

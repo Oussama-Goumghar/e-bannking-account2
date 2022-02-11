@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface KycRepository extends JpaRepository<Kyc, Long> {}
+public interface KycRepository extends JpaRepository<Kyc, Long> {
+    public Kyc findByNumIdentite(String numIdentite);
+}

@@ -1,7 +1,12 @@
 package com.ensa.web.rest;
 
+import com.ensa.domain.Benificiaire;
 import com.ensa.domain.Client;
+import com.ensa.domain.Compte;
+import com.ensa.domain.Kyc;
 import com.ensa.repository.ClientRepository;
+import com.ensa.service.BenificiaireService;
+import com.ensa.service.ClientService;
 import com.ensa.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,6 +17,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,144 +40,74 @@ public class ClientResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
-    private final ClientRepository clientRepository;
+    @Autowired
+    private ClientService clientService;
 
-    public ClientResource(ClientRepository clientRepository) {
-        this.clientRepository = clientRepository;
-    }
+    @Autowired
+    private BenificiaireService benificiaireService;
 
     /**
      * {@code POST  /clients} : Create a new client.
      *
-     * @param client the client to create.
+     * @param kyc the client to create.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new client, or with status {@code 400 (Bad Request)} if the client has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PostMapping("/clients")
-    public ResponseEntity<Client> createClient(@Valid @RequestBody Client client) throws URISyntaxException {
-        log.debug("REST request to save Client : {}", client);
-        if (client.getId() != null) {
-            throw new BadRequestAlertException("A new client cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        Client result = clientRepository.save(client);
+    @PostMapping("/clients/{refAgence}")
+    public ResponseEntity<Client> createClient(
+        @PathVariable String refAgence,
+        @Valid @RequestBody Kyc kyc) throws URISyntaxException {
+        log.debug("REST request to save Client : {}", kyc);
+
+        Client result = clientService.saveClient(kyc,refAgence);
         return ResponseEntity
             .created(new URI("/api/clients/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
-    /**
-     * {@code PUT  /clients/:id} : Updates an existing client.
-     *
-     * @param id the id of the client to save.
-     * @param client the client to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated client,
-     * or with status {@code 400 (Bad Request)} if the client is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the client couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PutMapping("/clients/{id}")
-    public ResponseEntity<Client> updateClient(
-        @PathVariable(value = "id", required = false) final Long id,
-        @Valid @RequestBody Client client
-    ) throws URISyntaxException {
-        log.debug("REST request to update Client : {}, {}", id, client);
-        if (client.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, client.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!clientRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Client result = clientRepository.save(client);
-        return ResponseEntity
-            .ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, client.getId().toString()))
-            .body(result);
+    @PostMapping("/clients/comptes/{numIdent}")
+    public ResponseEntity<Compte> addAccountToClient(@PathVariable String numIdent,
+                                                   @RequestBody Compte compte){
+        clientService.ajouterCompte(compte,numIdent);
+        return ResponseEntity.ok().build();
     }
 
-    /**
-     * {@code PATCH  /clients/:id} : Partial updates given fields of an existing client, field will ignore if it is null
-     *
-     * @param id the id of the client to save.
-     * @param client the client to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated client,
-     * or with status {@code 400 (Bad Request)} if the client is not valid,
-     * or with status {@code 404 (Not Found)} if the client is not found,
-     * or with status {@code 500 (Internal Server Error)} if the client couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PatchMapping(value = "/clients/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<Client> partialUpdateClient(
-        @PathVariable(value = "id", required = false) final Long id,
-        @NotNull @RequestBody Client client
-    ) throws URISyntaxException {
-        log.debug("REST request to partial update Client partially : {}, {}", id, client);
-        if (client.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, client.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!clientRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Optional<Client> result = clientRepository
-            .findById(client.getId())
-            .map(existingClient -> {
-                return existingClient;
-            })
-            .map(clientRepository::save);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, client.getId().toString())
-        );
+    @PostMapping("/clients/beneficiares/{numIdentBenif}/{numIdent}")
+    public ResponseEntity<Client> addAccountToClient(@PathVariable String numIdentBenif,
+                                                     @PathVariable String numIdent){
+        benificiaireService.ajoutBenifToClient(numIdentBenif,numIdent);
+        return ResponseEntity.ok().build();
     }
 
-    /**
-     * {@code GET  /clients} : get all the clients.
-     *
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of clients in body.
-     */
+
     @GetMapping("/clients")
     public List<Client> getAllClients() {
         log.debug("REST request to get all Clients");
-        return clientRepository.findAll();
+        return clientService.getAllClients();
     }
 
-    /**
-     * {@code GET  /clients/:id} : get the "id" client.
-     *
-     * @param id the id of the client to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the client, or with status {@code 404 (Not Found)}.
-     */
-    @GetMapping("/clients/{id}")
-    public ResponseEntity<Client> getClient(@PathVariable Long id) {
-        log.debug("REST request to get Client : {}", id);
-        Optional<Client> client = clientRepository.findById(id);
-        return ResponseUtil.wrapOrNotFound(client);
+
+    @GetMapping("/clients/agence/{refAgen}")
+    public List<Client> getAllClientsByAgence(@PathVariable String refAgen) {
+        log.debug("REST request to get all Clients");
+        return clientService.getClientsByAgence(refAgen);
     }
 
-    /**
-     * {@code DELETE  /clients/:id} : delete the "id" client.
-     *
-     * @param id the id of the client to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
-     */
-    @DeleteMapping("/clients/{id}")
-    public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
-        log.debug("REST request to delete Client : {}", id);
-        clientRepository.deleteById(id);
+
+    @GetMapping("/clients/identite/{numIdent}")
+    public Client getClientByIdentity(@PathVariable String numIdent) {
+        log.debug("REST request to get all Clients");
+        return clientService.getByNumIdentite(numIdent);
+    }
+
+    @DeleteMapping("/clients/{numIdent}/{rib}")
+    public ResponseEntity<Void> deleteClient(@PathVariable String numIdent,@PathVariable String rib ) {
+        log.debug("REST request to delete Client : {}", numIdent,rib);
+        clientService.suppCompte(numIdent,rib);
         return ResponseEntity
             .noContent()
-            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, rib.toString()))
             .build();
     }
 }

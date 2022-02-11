@@ -40,19 +40,11 @@ public class AgenceResource {
     private AgenceService agenceService;
 
 
-    /**
-     * {@code POST  /agences} : Create a new agence.
-     *
-     * @param agence the agence to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new agence, or with status {@code 400 (Bad Request)} if the agence has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
+
     @PostMapping("/agences")
     public ResponseEntity<Agence> createAgence(@Valid @RequestBody Agence agence) throws URISyntaxException {
         log.debug("REST request to save Agence : {}", agence);
-//        if (agence.getId() != null) {
-//            throw new BadRequestAlertException("A new agence cannot already have an ID", ENTITY_NAME, "idexists");
-//        }
+
         Agence result = agenceService.saveAgence(agence);
         return ResponseEntity
             .created(new URI("/api/agences/" + result.getId()))
@@ -60,32 +52,11 @@ public class AgenceResource {
             .body(result);
     }
 
-    /**
-     * {@code PUT  /agences/:id} : Updates an existing agence.
-     *
-     * @param id the id of the agence to save.
-     * @param agence the agence to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated agence,
-     * or with status {@code 400 (Bad Request)} if the agence is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the agence couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PutMapping("/agences/{id}")
+
+    @PutMapping("/agences")
     public ResponseEntity<Agence> updateAgence(
-        @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody Agence agence
     ) throws URISyntaxException {
-        log.debug("REST request to update Agence : {}, {}", id, agence);
-        if (agence.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, agence.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!agenceService.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
 
         Agence result = agenceService.updateAgence(agence);
         return ResponseEntity
@@ -94,33 +65,13 @@ public class AgenceResource {
             .body(result);
     }
 
-    /**
-     * {@code PATCH  /agences/:id} : Partial updates given fields of an existing agence, field will ignore if it is null
-     *
-     * @param id the id of the agence to save.
-     * @param agence the agence to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated agence,
-     * or with status {@code 400 (Bad Request)} if the agence is not valid,
-     * or with status {@code 404 (Not Found)} if the agence is not found,
-     * or with status {@code 500 (Internal Server Error)} if the agence couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PatchMapping(value = "/agences/{id}", consumes = { "application/json", "application/merge-patch+json" })
+
+    @PatchMapping(value = "/agences", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<Agence> partialUpdateAgence(
-        @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody Agence agence
     ) throws URISyntaxException {
-        log.debug("REST request to partial update Agence partially : {}, {}", id, agence);
-        if (agence.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, agence.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
+        log.debug("REST request to partial update Agence partially : {}, {}", agence);
 
-        if (!agenceService.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
 
         Agence result = agenceService.updateAgencePartial(agence);
 
@@ -130,23 +81,14 @@ public class AgenceResource {
             .body(result);
     }
 
-    /**
-     * {@code GET  /agences} : get all the agences.
-     *
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of agences in body.
-     */
+
     @GetMapping("/agences")
     public List<Agence> getAllAgences() {
         log.debug("REST request to get all Agences");
         return agenceService.getAllAgences();
     }
 
-    /**
-     * {@code GET  /agences/:id} : get the "id" agence.
-     *
-     * @param id the id of the agence to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the agence, or with status {@code 404 (Not Found)}.
-     */
+
     @GetMapping("/agences/{id}")
     public ResponseEntity<Agence> getAgence(@PathVariable Long id) {
         log.debug("REST request to get Agence : {}", id);
@@ -155,12 +97,6 @@ public class AgenceResource {
     }
 
 
-    /**
-     * {@code GET  /agences/reference/:ref} : get the "reference" agence.
-     *
-     * @param ref the id of the agence to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the agence, or with status {@code 404 (Not Found)}.
-     */
     @GetMapping("/agences/reference/{ref}")
     public ResponseEntity<Agence> getAgenceByRef(@PathVariable String ref) {
         log.debug("REST request to get Agence : {}", ref);
@@ -169,19 +105,13 @@ public class AgenceResource {
     }
 
 
-    /**
-     * {@code DELETE  /agences/:id} : delete the "id" agence.
-     *
-     * @param id the id of the agence to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
-     */
-    @DeleteMapping("/agences/{id}")
-    public ResponseEntity<Void> deleteAgence(@PathVariable Long id) {
-        log.debug("REST request to delete Agence : {}", id);
-        agenceService.deleteAgence(id);
+    @DeleteMapping("/agences/{refAgence}")
+    public ResponseEntity<Void> deleteAgence(@PathVariable String refAgence) {
+        log.debug("REST request to delete Agence : {}", refAgence);
+        agenceService.deleteAgence(refAgence);
         return ResponseEntity
             .noContent()
-            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, refAgence))
             .build();
     }
 }
