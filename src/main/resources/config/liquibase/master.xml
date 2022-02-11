@@ -24,7 +24,6 @@
     <include file="config/liquibase/changelog/20220117230300_added_entity_Passager.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20220117230400_added_entity_Benificiaire.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
-    <include file="config/liquibase/changelog/20220117225800_added_entity_constraints_Compte.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20220117230000_added_entity_constraints_Client.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20220117230100_added_entity_constraints_Gab.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20220117230200_added_entity_constraints_Agent.xml" relativeToChangelogFile="false"/>

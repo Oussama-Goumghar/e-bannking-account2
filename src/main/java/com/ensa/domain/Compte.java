@@ -36,9 +36,6 @@ public class Compte implements Serializable {
     @Column(name = "rib")
     private String rib;
 
-    @ManyToOne
-    @JsonIgnoreProperties(value = { "kyc", "comptes", "agence" }, allowSetters = true)
-    private Client client;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -107,18 +104,7 @@ public class Compte implements Serializable {
         this.rib = rib;
     }
 
-    public Client getClient() {
-        return this.client;
-    }
 
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
-    public Compte client(Client client) {
-        this.setClient(client);
-        return this;
-    }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 

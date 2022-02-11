@@ -45,9 +45,9 @@ public class ClientService {
         compteService.saveCompte(compte);
         Kyc kyc = kycService.getByNumIdentite(numIdent);
         Client client = clientRepository.findByKyc(kyc);
-        Set<Compte> comptes = client.getComptes();
+       /* Set<Compte> comptes = client.getComptes();
         comptes.add(compte);
-        client.setComptes(comptes);
+        client.setComptes(comptes);*/
         clientRepository.save(client);
     }
 
@@ -57,9 +57,9 @@ public class ClientService {
         Client client = clientRepository.findByKyc(kyc);
         Compte compte = compteService.getCompteByRib(rib);
 
-        Set<Compte> comptes = client.getComptes();
+        /*Set<Compte> comptes = client.getComptes();
         comptes.remove(compte);
-        client.setComptes(comptes);
+        client.setComptes(comptes);*/
         compteService.deleteByRib(rib);
         clientRepository.save(client);
     }

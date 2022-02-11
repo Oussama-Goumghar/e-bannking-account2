@@ -35,7 +35,7 @@ public class Agent implements Serializable {
     @Column(name = "password")
     private String password;
 
-    @JsonIgnoreProperties(value = { "client" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "agent" }, allowSetters = true)
     @OneToOne
     @JoinColumn(unique = true)
     private Compte compteAgent;

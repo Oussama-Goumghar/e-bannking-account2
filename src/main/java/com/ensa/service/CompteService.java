@@ -28,7 +28,7 @@ public class CompteService {
         compte1.setRib(compte.getRib());
         compte1.setSolde(compte.getSolde());
         compte1.setStatus(compte.getStatus());
-        compte1.setClient(compte.getClient());
+    //    compte1.setClient(compte.getClient());
 
         return compteRepository.save(compte1);
     }
@@ -36,10 +36,10 @@ public class CompteService {
     public Compte updateComptePartial(Compte compte)
     {
         Compte compte1 = compteRepository.findById(compte.getId()).orElseThrow();
-        if(compte.getClient()!=null)
+      /*  if(compte.getClient()!=null)
         {
             compte1.setClient(compte.getClient());
-        }
+        }*/
         if(compte.getDateCreation()!=null)
         {
             compte1.setDateCreation(compte.getDateCreation());
@@ -75,7 +75,7 @@ public class CompteService {
         return compteRepository.findByRib(rib);
     }
 
-    public List<Compte> getComptesByClient(Client client){return compteRepository.findByClient(client);}
+   // public List<Compte> getComptesByClient(Client client){return compteRepository.findByClient(client);}
 
     public boolean existsById(Long id)
     {

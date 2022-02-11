@@ -19,5 +19,11 @@
                                  constraintName="fk_client__agence_id"
                                  referencedColumnNames="id"
                                  referencedTableName="agence"/>
+
+        <addForeignKeyConstraint baseColumnNames="compte_client_id"
+                                 baseTableName="client"
+                                 constraintName="fk_client__compte_client_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="compte"/>
     </changeSet>
 </databaseChangeLog>

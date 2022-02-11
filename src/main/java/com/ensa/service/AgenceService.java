@@ -40,6 +40,7 @@ public class AgenceService {
 
     }
 
+
     public Agence updateAgencePartial(Agence agence)
     {
         Agence agence1 = agenceRepository.findById(agence.getId()).orElseThrow(IllegalStateException::new);

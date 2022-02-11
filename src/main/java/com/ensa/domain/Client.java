@@ -29,10 +29,10 @@ public class Client implements Serializable {
     @JoinColumn(unique = true)
     private Kyc kyc;
 
-    @OneToMany(mappedBy = "client")
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "client" }, allowSetters = true)
-    private Set<Compte> comptes = new HashSet<>();
+    @OneToOne
+    @JoinColumn(unique = true)
+    private Compte compteClient;
 
     @OneToMany(mappedBy = "client")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -78,37 +78,6 @@ public class Client implements Serializable {
         return this;
     }
 
-    public Set<Compte> getComptes() {
-        return this.comptes;
-    }
-
-    public void setComptes(Set<Compte> comptes) {
-        if (this.comptes != null) {
-            this.comptes.forEach(i -> i.setClient(null));
-        }
-        if (comptes != null) {
-            comptes.forEach(i -> i.setClient(this));
-        }
-        this.comptes = comptes;
-    }
-
-    public Client comptes(Set<Compte> comptes) {
-        this.setComptes(comptes);
-        return this;
-    }
-
-    public Client addComptes(Compte compte) {
-        this.comptes.add(compte);
-        compte.setClient(this);
-        return this;
-    }
-
-    public Client removeComptes(Compte compte) {
-        this.comptes.remove(compte);
-        compte.setClient(null);
-        return this;
-    }
-
     public Agence getAgence() {
         return this.agence;
     }
@@ -122,7 +91,15 @@ public class Client implements Serializable {
         return this;
     }
 
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
+    public Compte getCompteClient() {
+        return compteClient;
+    }
+
+    public void setCompteClient(Compte compte) {
+        this.compteClient = compte;
+    }
+
+// jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
     public boolean equals(Object o) {

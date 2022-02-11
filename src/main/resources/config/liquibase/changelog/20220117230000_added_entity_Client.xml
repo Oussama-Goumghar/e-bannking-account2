@@ -20,6 +20,9 @@
             <column name="agence_id" type="bigint">
                 <constraints nullable="true" />
             </column>
+            <column name="compte_client_id" type="bigint">
+                <constraints nullable="true" unique="true" uniqueConstraintName="ux_client__compte_client_id" />
+            </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
     </changeSet>

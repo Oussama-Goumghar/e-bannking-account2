@@ -14,5 +14,5 @@ import java.util.List;
 @Repository
 public interface CompteRepository extends JpaRepository<Compte, Long> {
     public Compte findByRib(String rib);
-    public List<Compte> findByClient(Client client);
+   // public List<Compte> findByClient(Client client);
 }
