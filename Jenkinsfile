@@ -57,12 +57,12 @@ pipeline {
         stage('publish docker') {
             steps {
         // khasni nzid l tag k image dyal docker
-	        sh "./mvnw -ntp -Pprod verify jib:build -Djib.to.image=brahimafa/accountApi"
+	        sh "./mvnw -ntp -Pprod verify jib:build -Djib.to.image=brahimafa/accountapi"
             }
         }
 	stage('K8S rollout') {
             steps {
-                sh "kubectl rollout restart deployment/accountApi -n demo"
+                sh "kubectl rollout restart deployment/accountapi -n demo"
             }
         }
 
