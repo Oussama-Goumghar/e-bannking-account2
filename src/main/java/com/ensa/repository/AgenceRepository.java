@@ -11,4 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AgenceRepository extends JpaRepository<Agence, Long> {
     public Agence findByReference(String ref);
+
+    boolean existsByReference(String reference);
 }

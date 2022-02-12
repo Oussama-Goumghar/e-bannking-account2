@@ -33,6 +33,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @Transactional
 public class ClientResource {
 
+
     private final Logger log = LoggerFactory.getLogger(ClientResource.class);
 
     private static final String ENTITY_NAME = "accountApiClient";
@@ -68,7 +69,7 @@ public class ClientResource {
 
     @PostMapping("/clients/comptes/{numIdent}")
     public ResponseEntity<Compte> addAccountToClient(@PathVariable String numIdent,
-                                                   @RequestBody Compte compte){
+                                                     @RequestBody Compte compte){
         clientService.ajouterCompte(compte,numIdent);
         return ResponseEntity.ok().build();
     }

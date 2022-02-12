@@ -52,13 +52,25 @@ public class AgenceResource {
             .body(result);
     }
 
+    @PostMapping("/agences/plafamount/{refAgence}/{montant}")
+    public void setPlafondAmount(@PathVariable String refAgence,@PathVariable Double montant) throws URISyntaxException {
 
-    @PutMapping("/agences")
-    public ResponseEntity<Agence> updateAgence(
-        @Valid @RequestBody Agence agence
+        agenceService.setPlafondAmount(refAgence,montant);
+    }
+
+    @PostMapping("/agences/plaftrans/{refAgence}/{montant}")
+    public void setPlafondTrans(@PathVariable String refAgence,@PathVariable Integer montant) throws URISyntaxException {
+
+        agenceService.setPlafondTransa(refAgence,montant);
+    }
+
+
+    @PutMapping("/agences/{ref}")
+    public ResponseEntity<Agence> updateAgence(@PathVariable String ref,
+                                               @Valid @RequestBody Agence agence
     ) throws URISyntaxException {
 
-        Agence result = agenceService.updateAgence(agence);
+        Agence result = agenceService.updateAgence(agence,ref);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, agence.getId().toString()))
@@ -66,14 +78,14 @@ public class AgenceResource {
     }
 
 
-    @PatchMapping(value = "/agences", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<Agence> partialUpdateAgence(
-        @NotNull @RequestBody Agence agence
+    @PatchMapping(value = "/agences/{ref}", consumes = { "application/json", "application/merge-patch+json" })
+    public ResponseEntity<Agence> partialUpdateAgence(@PathVariable String ref,
+                                                      @NotNull @RequestBody Agence agence
     ) throws URISyntaxException {
         log.debug("REST request to partial update Agence partially : {}, {}", agence);
 
 
-        Agence result = agenceService.updateAgencePartial(agence);
+        Agence result = agenceService.updateAgencePartial(agence,ref);
 
         return ResponseEntity
             .ok()
@@ -111,7 +123,7 @@ public class AgenceResource {
         agenceService.deleteAgence(refAgence);
         return ResponseEntity
             .noContent()
-            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, refAgence))
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, refAgence.toString()))
             .build();
     }
 }

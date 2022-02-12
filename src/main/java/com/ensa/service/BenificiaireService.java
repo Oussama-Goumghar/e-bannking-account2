@@ -14,7 +14,6 @@ import java.util.Set;
 
 @Service
 public class BenificiaireService {
-
     @Autowired
     private BenificiaireRepository benificiaireRepository;
 

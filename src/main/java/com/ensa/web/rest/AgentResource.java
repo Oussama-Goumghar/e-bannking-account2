@@ -52,11 +52,11 @@ public class AgentResource {
             .body(result);
     }
 
-    @PutMapping("/agents")
-    public ResponseEntity<Agent> updateAgent( @Valid @RequestBody Agent agent)
+    @PutMapping("/agents/{login}")
+    public ResponseEntity<Agent> updateAgent(@PathVariable String login, @Valid @RequestBody Agent agent)
         throws URISyntaxException {
 
-        Agent result = agentService.updateAgent(agent);
+        Agent result = agentService.updateAgent(agent,login);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, agent.getId().toString()))
@@ -64,12 +64,12 @@ public class AgentResource {
     }
 
 
-    @PatchMapping(value = "/agents", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity partialUpdateAgent(
-        @NotNull @RequestBody Agent agent
+    @PatchMapping(value = "/agents/{login}", consumes = { "application/json", "application/merge-patch+json" })
+    public ResponseEntity partialUpdateAgent(@PathVariable String login,
+                                             @NotNull @RequestBody Agent agent
     ) throws URISyntaxException {
 
-        Agent result = agentService.updateAgentPartial(agent);
+        Agent result = agentService.updateAgentPartial(agent,login);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, agent.getId().toString()))
@@ -91,18 +91,18 @@ public class AgentResource {
         return agentService.getById(id);
     }
 
-    @GetMapping("/agents/{agence}")
-    public List<Agent> getAgentByAgence(@PathVariable Agence agence) {
-        log.debug("REST request to get Agent : {}", agence);
+    @GetMapping("/agents/{refAg}")
+    public List<Agent> getAgentByAgence(@PathVariable String refAg) {
+        log.debug("REST request to get Agent : {}", refAg);
 
-        return agentService.getByAgence(agence);
+        return agentService.getByAgence(refAg);
     }
 
 
-    @DeleteMapping("/agents/{id}")
-    public ResponseEntity<Void> deleteAgent(@PathVariable Long id) {
-        log.debug("REST request to delete Agent : {}", id);
-        return agentService.deleteAgent(id);
+    @DeleteMapping("/agents/{login}")
+    public void deleteAgent(@PathVariable String login) {
+        log.debug("REST request to delete Agent : {}", login);
+        agentService.deleteAgent(login);
 
     }
 }

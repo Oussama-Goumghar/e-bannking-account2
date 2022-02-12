@@ -28,7 +28,6 @@ public class CompteService {
         compte1.setRib(compte.getRib());
         compte1.setSolde(compte.getSolde());
         compte1.setStatus(compte.getStatus());
-    //    compte1.setClient(compte.getClient());
 
         return compteRepository.save(compte1);
     }
@@ -74,8 +73,6 @@ public class CompteService {
     {
         return compteRepository.findByRib(rib);
     }
-
-   // public List<Compte> getComptesByClient(Client client){return compteRepository.findByClient(client);}
 
     public boolean existsById(Long id)
     {

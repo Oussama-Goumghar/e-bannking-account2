@@ -17,7 +17,15 @@ public class AgenceService {
 
     public Agence saveAgence(Agence agence)
     {
-        return agenceRepository.save(agence);
+        if(agenceRepository.existsByReference(agence.getReference()))
+        {
+            Agence agence1 = agenceRepository.findByReference(agence.getReference());
+            return agence1;
+        }
+        else
+        {
+            return agenceRepository.save(agence);
+        }
     }
 
     public void deleteAgence(String refAgen)
@@ -26,41 +34,47 @@ public class AgenceService {
         agenceRepository.delete(agence);
     }
 
-    public Agence updateAgence(Agence agence)
+    public Agence updateAgence(Agence agence,String ref)
     {
-        Agence agence1 = agenceRepository.findById(agence.getId()).orElseThrow(IllegalStateException::new);
+        if(ref == agence.getReference())
+        {
+            Agence agence1 = agenceRepository.findByReference(ref);
 
-        agence1.setReference(agence.getReference());
-        agence1.setVille(agence.getVille());
-        agence1.setAddress(agence.getVille());
-        agence1.setPlafondMontant(agence.getPlafondMontant());
-        agence1.setPlafondTransaction(agence.getPlafondTransaction());
+            agence1.setReference(agence.getReference());
+            agence1.setVille(agence.getVille());
+            agence1.setAddress(agence.getVille());
+            agence1.setPlafondMontant(agence.getPlafondMontant());
+            agence1.setPlafondTransaction(agence.getPlafondTransaction());
 
-        return agenceRepository.save(agence1);
-
+            return agenceRepository.save(agence1);
+        }
+        else return null;
     }
 
-
-    public Agence updateAgencePartial(Agence agence)
+    public Agence updateAgencePartial(Agence agence,String ref)
     {
-        Agence agence1 = agenceRepository.findById(agence.getId()).orElseThrow(IllegalStateException::new);
-        if (agence.getAddress() != null) {
-            agence1.setAddress(agence.getAddress());
-        }
-        if (agence.getVille() != null) {
-            agence1.setVille(agence.getVille());
-        }
-        if (agence.getReference() != null) {
-            agence1.setReference(agence.getReference());
-        }
-        if (agence.getPlafondMontant() != null) {
-            agence1.setPlafondMontant(agence.getPlafondMontant());
-        }
-        if (agence.getPlafondTransaction() != null) {
-            agence1.setPlafondTransaction(agence.getPlafondTransaction());
-        }
+        if(ref == agence.getReference()) {
+            Agence agence1 = agenceRepository.findById(agence.getId()).orElseThrow(IllegalStateException::new);
 
-        return agenceRepository.save(agence1);
+            if (agence.getAddress() != null) {
+                agence1.setAddress(agence.getAddress());
+            }
+            if (agence.getVille() != null) {
+                agence1.setVille(agence.getVille());
+            }
+            if (agence.getReference() != null) {
+                agence1.setReference(agence.getReference());
+            }
+            if (agence.getPlafondMontant() != null) {
+                agence1.setPlafondMontant(agence.getPlafondMontant());
+            }
+            if (agence.getPlafondTransaction() != null) {
+                agence1.setPlafondTransaction(agence.getPlafondTransaction());
+            }
+
+            return agenceRepository.save(agence1);
+        }
+        else return null;
 
     }
 
@@ -81,5 +95,19 @@ public class AgenceService {
 
     public boolean existsById(Long id) {
         return agenceRepository.existsById(id);
+    }
+
+    public void setPlafondAmount(String refAgen,Double montant)
+    {
+        Agence agence = agenceRepository.findByReference(refAgen);
+        agence.setPlafondMontant(montant);
+        agenceRepository.save(agence);
+    }
+
+    public void setPlafondTransa(String refAgen,Integer montant)
+    {
+        Agence agence = agenceRepository.findByReference(refAgen);
+        agence.setPlafondTransaction(montant);
+        agenceRepository.save(agence);
     }
 }

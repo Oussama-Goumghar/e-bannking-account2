@@ -43,11 +43,11 @@ public class ClientService {
     public void ajouterCompte(Compte compte,String numIdent)
     {
         compteService.saveCompte(compte);
+
         Kyc kyc = kycService.getByNumIdentite(numIdent);
         Client client = clientRepository.findByKyc(kyc);
-       /* Set<Compte> comptes = client.getComptes();
-        comptes.add(compte);
-        client.setComptes(comptes);*/
+        client.setCompteClient(compte);
+
         clientRepository.save(client);
     }
 
@@ -56,10 +56,7 @@ public class ClientService {
         Kyc kyc = kycService.getByNumIdentite(numIdent);
         Client client = clientRepository.findByKyc(kyc);
         Compte compte = compteService.getCompteByRib(rib);
-
-        /*Set<Compte> comptes = client.getComptes();
-        comptes.remove(compte);
-        client.setComptes(comptes);*/
+        client.setCompteClient(null);
         compteService.deleteByRib(rib);
         clientRepository.save(client);
     }
