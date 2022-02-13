@@ -1,13 +1,13 @@
 package com.ensa.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.*;
-import javax.validation.constraints.*;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * A Client.
@@ -29,14 +29,14 @@ public class Client implements Serializable {
     @JoinColumn(unique = true)
     private Kyc kyc;
 
-    @JsonIgnoreProperties(value = { "client" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"client"}, allowSetters = true)
     @OneToOne
     @JoinColumn(unique = true)
     private Compte compteClient;
 
-    @OneToMany(mappedBy = "client")
+    @OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = { "client" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"client"}, allowSetters = true)
     private Set<Benificiaire> benificiaires = new HashSet<>();
 
     @ManyToOne
