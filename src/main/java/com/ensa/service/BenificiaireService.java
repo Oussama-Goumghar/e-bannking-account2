@@ -10,6 +10,7 @@ import com.ensa.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -88,5 +89,9 @@ public class BenificiaireService {
 
         kycService.deleteKyc(kycBene.getId());
         benificiaireRepository.delete(benificiaire);
+    }
+
+    public List<Benificiaire> getListOfBenificiairsBynumClient(String numIdentityClient) {
+        return benificiaireRepository.findBenificiairesByClient_Kyc_NumIdentite(numIdentityClient);
     }
 }

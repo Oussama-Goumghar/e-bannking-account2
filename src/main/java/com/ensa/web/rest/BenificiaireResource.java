@@ -106,4 +106,9 @@ public class BenificiaireResource {
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, numIdent))
             .build();
     }
+
+    @GetMapping("/benificiaires/client-num/{numIdent}")
+    public List<Benificiaire> getBenificiaireByClient(@PathVariable String numIdent) {
+        return benificiaireService.getListOfBenificiairsBynumClient(numIdent);
+    }
 }
