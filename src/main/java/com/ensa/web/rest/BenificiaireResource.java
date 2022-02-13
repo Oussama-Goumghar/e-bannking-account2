@@ -111,4 +111,9 @@ public class BenificiaireResource {
     public List<Benificiaire> getBenificiaireByClient(@PathVariable String numIdent) {
         return benificiaireService.getListOfBenificiairsBynumClient(numIdent);
     }
+
+    @GetMapping("/benificiaires/nom-benificiair/{nomBenificiair}/client-num/{numIdent}")
+    public Benificiaire getBenificiaireByNomBenificiairAndNumClient(@PathVariable String nomBenificiair,@PathVariable String numIdent) {
+        return benificiaireService.getBenificiairBynomAndNumClient(nomBenificiair,numIdent);
+    }
 }

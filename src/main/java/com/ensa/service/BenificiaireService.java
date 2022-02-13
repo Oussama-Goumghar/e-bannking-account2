@@ -7,10 +7,12 @@ import com.ensa.domain.Compte;
 import com.ensa.domain.Kyc;
 import com.ensa.repository.BenificiaireRepository;
 import com.ensa.repository.ClientRepository;
+import liquibase.pro.packaged.B;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -93,5 +95,10 @@ public class BenificiaireService {
 
     public List<Benificiaire> getListOfBenificiairsBynumClient(String numIdentityClient) {
         return benificiaireRepository.findBenificiairesByClient_Kyc_NumIdentite(numIdentityClient);
+    }
+
+    public Benificiaire getBenificiairBynomAndNumClient(String nomBenificiair, String numClient) {
+        Optional<Benificiaire> benificiaire=benificiaireRepository.findBenificiaireByKyc_NomAndClient_Kyc_NumIdentite(nomBenificiair, numClient);
+        return benificiaire.orElse(null);
     }
 }
