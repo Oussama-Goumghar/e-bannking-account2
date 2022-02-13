@@ -24,12 +24,15 @@ public class BenificiaireService {
     private ClientRepository clientRepository;
 
 
-    public Benificiaire saveBenificiaire(Kyc kyc)
+    public Benificiaire saveBenificiaire(Kyc kyc,String numClient)
     {
         kycService.saveKyc(kyc);
         Benificiaire benificiaire = new Benificiaire();
         benificiaire.setKyc(kyc);
-
+        Client client = clientRepository.findClientByKyc_NumIdentite(numClient);
+        if (client != null) {
+            benificiaire.setClient(client);
+        }
         return benificiaireRepository.save(benificiaire);
     }
 

@@ -41,13 +41,13 @@ public class BenificiaireResource {
     private BenificiaireService benificiaireService;
 
 
-    @PostMapping("/benificiaires")
-    public ResponseEntity<Benificiaire> createBenificiaire(@Valid @RequestBody Kyc kyc) throws URISyntaxException {
+    @PostMapping("/benificiaires/num-client/{numClient}")
+    public ResponseEntity<Benificiaire> createBenificiaire(@Valid @RequestBody Kyc kyc,@PathVariable String numClient) throws URISyntaxException {
         log.debug("REST request to save Benificiaire : {}", kyc);
         if (kyc.getId() != null) {
             throw new BadRequestAlertException("A new benificiaire cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        Benificiaire result = benificiaireService.saveBenificiaire(kyc);
+        Benificiaire result = benificiaireService.saveBenificiaire(kyc, numClient);
         return ResponseEntity
             .created(new URI("/api/benificiaires/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))

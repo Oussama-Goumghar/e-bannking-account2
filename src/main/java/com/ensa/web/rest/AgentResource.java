@@ -39,17 +39,14 @@ public class AgentResource {
 
 
 
-    @PostMapping("/agents")
-    public ResponseEntity<Agent> createAgent(@Valid @RequestBody Agent agent) throws URISyntaxException {
+    @PostMapping("/agents/referece-agence/{referenceAgence}")
+    public int createAgent(@Valid @RequestBody Agent agent,@PathVariable String referenceAgence) throws URISyntaxException {
         log.debug("REST request to save Agent : {}", agent);
         if (agent.getId() != null) {
             throw new BadRequestAlertException("A new agent cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        Agent result = agentService.saveAgent(agent);
-        return ResponseEntity
-            .created(new URI("/api/agents/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        return agentService.saveAgent(agent,referenceAgence);
+
     }
 
     @PutMapping("/agents/{login}")
@@ -105,4 +102,16 @@ public class AgentResource {
         agentService.deleteAgent(login);
 
     }
+
+    @GetMapping("/agents/credit-account/{login}/montant/{montant}")
+    public int creditAccountAgent(@PathVariable String login, @PathVariable double montant) {
+       return agentService.creditCompteAgent(login, montant);
+    }
+
+    @GetMapping("/agents/debit-account/{login}/montant/{montant}")
+    public int debitAccountAgent(@PathVariable String login, @PathVariable double montant) {
+        return agentService.debiteCompteAgent(login, montant);
+    }
+
+
 }

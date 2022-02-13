@@ -7,8 +7,12 @@ import com.ensa.repository.CompteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class CompteService {
@@ -91,17 +95,28 @@ public class CompteService {
         compteRepository.delete(compte);
     }
 
-    public void crediterCompte(Long id,Double montant)
-    {
-        Compte compte = compteRepository.findById(id).orElseThrow();
-        compte.setSolde(compte.getSolde() + montant);
-        compteRepository.save(compte);
+
+    public Compte createAccountAgent() {
+        long number = (long) Math.floor(Math.random() * 9_000_000_000L) + 1_000_000_000L;
+
+        Compte compte = new Compte();
+        compte.setSolde((double) 10000);
+        compte.setDateCreation(LocalDate.now());
+        compte.setRib(number+"");
+        compte.setStatus(RibStatus.ACTIVER.name());
+
+        return compteRepository.save(compte);
     }
 
-    public void debiterCompte(Long id,Double montant)
-    {
-        Compte compte = compteRepository.findById(id).orElseThrow();
-        compte.setSolde(compte.getSolde() - montant);
-        compteRepository.save(compte);
+    public Compte createAccountClient() {
+        long number = (long) Math.floor(Math.random() * 9_000_000_000L) + 1_000_000_000L;
+
+        Compte compte = new Compte();
+        compte.setSolde((double) 0);
+        compte.setDateCreation(LocalDate.now());
+        compte.setRib(number+"");
+        compte.setStatus(RibStatus.ACTIVER.name());
+
+        return compteRepository.save(compte);
     }
 }

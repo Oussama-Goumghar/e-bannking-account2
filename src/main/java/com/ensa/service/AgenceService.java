@@ -36,7 +36,7 @@ public class AgenceService {
 
     public Agence updateAgence(Agence agence,String ref)
     {
-        if(ref == agence.getReference())
+        if(ref.equals(agence.getReference()))
         {
             Agence agence1 = agenceRepository.findByReference(ref);
 
@@ -53,7 +53,7 @@ public class AgenceService {
 
     public Agence updateAgencePartial(Agence agence,String ref)
     {
-        if(ref == agence.getReference()) {
+        if(ref.equals(agence.getReference())) {
             Agence agence1 = agenceRepository.findById(agence.getId()).orElseThrow(IllegalStateException::new);
 
             if (agence.getAddress() != null) {

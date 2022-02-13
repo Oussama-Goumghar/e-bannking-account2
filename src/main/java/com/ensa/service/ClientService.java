@@ -36,7 +36,8 @@ public class ClientService {
         kycService.saveKyc(kyc);
         client.setKyc(kyc);
         client.setAgence(agence);
-
+        Compte compte = compteService.createAccountClient();
+        client.setCompteClient(compte);
         return clientRepository.save(client);
     }
 
@@ -47,7 +48,6 @@ public class ClientService {
         Kyc kyc = kycService.getByNumIdentite(numIdent);
         Client client = clientRepository.findByKyc(kyc);
         client.setCompteClient(compte);
-
         clientRepository.save(client);
     }
 
@@ -77,7 +77,10 @@ public class ClientService {
     }
 
     public Client getByNumIdentite(String numIdent){
-        Kyc kyc = kycService.getByNumIdentite(numIdent);
-        return clientRepository.findByKyc(kyc);
+      //  Kyc kyc = kycService.getByNumIdentite(numIdent);
+      //  return clientRepository.findByKyc(kyc);
+        return clientRepository.findClientByKyc_NumIdentite(numIdent);
     }
+
+
 }

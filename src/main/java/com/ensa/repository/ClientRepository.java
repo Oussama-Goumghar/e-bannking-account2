@@ -3,7 +3,7 @@ package com.ensa.repository;
 import com.ensa.domain.Agence;
 import com.ensa.domain.Client;
 import com.ensa.domain.Kyc;
-import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,7 +15,10 @@ import java.util.List;
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Long> {
 
-    public Client findByKyc(Kyc kyc);
+    Client findByKyc(Kyc kyc);
 
-    public List<Client> findByAgence(Agence agence);
+    List<Client> findByAgence(Agence agence);
+
+    Client findClientByKyc_NumIdentite(String numIdentite);
+
 }

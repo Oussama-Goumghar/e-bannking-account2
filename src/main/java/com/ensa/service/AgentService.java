@@ -3,6 +3,7 @@ package com.ensa.service;
 
 import com.ensa.domain.Agence;
 import com.ensa.domain.Agent;
+import com.ensa.domain.Compte;
 import com.ensa.repository.AgenceRepository;
 import com.ensa.repository.AgentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,21 +21,34 @@ public class AgentService {
     @Autowired
     private AgenceRepository agenceRepository;
 
-    public Agent saveAgent(Agent agent)
+    @Autowired
+    private CompteService compteService;
+
+    public int saveAgent(Agent agent,String referenceAgence)
     {
+
         if(agentRepository.existsByLogin(agent.getLogin()))
         {
-            return null;
+            return -1;
         }
         else
         {
-            return agentRepository.save(agent);
+            Agence agence = agenceRepository.findByReference(referenceAgence);
+            if (agence == null) {
+                return -2;
+            } else {
+                agent.setAgence(agence);
+                Compte compte = compteService.createAccountAgent();
+                agent.setCompteAgent(compte);
+                agentRepository.save(agent);
+                return 1;
+            }
         }
     }
 
 
     public Agent updateAgent(Agent agent,String login){
-        if(login == agent.getLogin())
+        if(login.equals(agent.getLogin()))
         {
             Agent agent1 = agentRepository.findById(agent.getId()).orElseThrow();
 
@@ -52,7 +66,7 @@ public class AgentService {
 
     public Agent updateAgentPartial(Agent agent,String login)
     {
-        if(login == agent.getLogin()) {
+        if(login.equals(agent.getLogin())) {
             Agent agent1 = agentRepository.findById(agent.getId()).orElseThrow();
 
 
@@ -100,6 +114,33 @@ public class AgentService {
         Agent agent = agentRepository.findByLogin(login);
         agentRepository.delete(agent);
     }
+
+    public int creditCompteAgent(String login,double montant) {
+        Agent agent = agentRepository.findByLogin(login);
+        if (agent == null) {
+            return 1;
+        } else {
+            agent.getCompteAgent().setSolde(agent.getCompteAgent().getSolde()+montant);
+            agentRepository.save(agent);
+            return 1;
+        }
+    }
+
+    public int debiteCompteAgent(String login,double montant) {
+        Agent agent = agentRepository.findByLogin(login);
+        if (agent == null) {
+            return -1;
+        } else {
+            if (agent.getCompteAgent().getSolde() < montant) {
+                return -2;
+            } else {
+                agent.getCompteAgent().setSolde(agent.getCompteAgent().getSolde()-montant);
+                agentRepository.save(agent);
+                return 1;
+            }
+        }
+    }
+
 
 
     public boolean existsById(Long id) {

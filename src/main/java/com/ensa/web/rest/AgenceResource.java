@@ -126,4 +126,9 @@ public class AgenceResource {
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, refAgence.toString()))
             .build();
     }
+
+    @GetMapping("/agences/test")
+    public String test() {
+       return "hahowa test";
+    }
 }
