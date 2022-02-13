@@ -12,7 +12,6 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
  */
 @Entity
 @Table(name = "kyc")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Kyc implements Serializable {
 
     private static final long serialVersionUID = 1L;

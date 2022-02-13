@@ -12,7 +12,6 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
  */
 @Entity
 @Table(name = "agent")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Agent implements Serializable {
 
     private static final long serialVersionUID = 1L;

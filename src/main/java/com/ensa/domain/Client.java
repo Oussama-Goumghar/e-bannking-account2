@@ -14,7 +14,6 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "client")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Client implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -35,7 +34,6 @@ public class Client implements Serializable {
     private Compte compteClient;
 
     @OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = {"client"}, allowSetters = true)
     private Set<Benificiaire> benificiaires = new HashSet<>();
 
