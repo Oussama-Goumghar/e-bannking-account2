@@ -2,16 +2,8 @@ package com.ensa.web.rest;
 
 import com.ensa.domain.Benificiaire;
 import com.ensa.domain.Kyc;
-import com.ensa.repository.BenificiaireRepository;
 import com.ensa.service.BenificiaireService;
 import com.ensa.web.rest.errors.BadRequestAlertException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +14,12 @@ import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
+
 /**
  * REST controller for managing {@link com.ensa.domain.Benificiaire}.
  */
@@ -30,10 +28,8 @@ import tech.jhipster.web.util.ResponseUtil;
 @Transactional
 public class BenificiaireResource {
 
-    private final Logger log = LoggerFactory.getLogger(BenificiaireResource.class);
-
     private static final String ENTITY_NAME = "accountApiBenificiaire";
-
+    private final Logger log = LoggerFactory.getLogger(BenificiaireResource.class);
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
@@ -42,23 +38,19 @@ public class BenificiaireResource {
 
 
     @PostMapping("/benificiaires/num-client/{numClient}")
-    public ResponseEntity<Benificiaire> createBenificiaire(@Valid @RequestBody Kyc kyc,@PathVariable String numClient) throws URISyntaxException {
+    public int createBenificiaire(@Valid @RequestBody Kyc kyc, @PathVariable String numClient) throws URISyntaxException {
         log.debug("REST request to save Benificiaire : {}", kyc);
         if (kyc.getId() != null) {
             throw new BadRequestAlertException("A new benificiaire cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        Benificiaire result = benificiaireService.saveBenificiaire(kyc, numClient);
-        return ResponseEntity
-            .created(new URI("/api/benificiaires/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        return benificiaireService.saveBenificiaire(kyc, numClient);
     }
 
 
     @PutMapping("/benificiaires")
     public ResponseEntity<Benificiaire> updateBenificiaire(
         @Valid @RequestBody Benificiaire benificiaire
-    ){
+    ) {
 
         Benificiaire result = benificiaireService.updateBenificiare(benificiaire);
         return ResponseEntity
@@ -68,7 +60,7 @@ public class BenificiaireResource {
     }
 
 
-    @PatchMapping(value = "/benificiaires", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/benificiaires", consumes = {"application/json", "application/merge-patch+json"})
     public ResponseEntity<Benificiaire> partialUpdateBenificiaire(
         @NotNull @RequestBody Benificiaire benificiaire
     ) throws URISyntaxException {
@@ -107,13 +99,19 @@ public class BenificiaireResource {
             .build();
     }
 
+    @DeleteMapping("/benificiaires/delete/id/{id}")
+    public int deleteBenificiaireById(@PathVariable Long id) {
+        return benificiaireService.deleteById(id);
+    }
+
     @GetMapping("/benificiaires/client-num/{numIdent}")
     public List<Benificiaire> getBenificiaireByClient(@PathVariable String numIdent) {
         return benificiaireService.getListOfBenificiairsBynumClient(numIdent);
     }
 
     @GetMapping("/benificiaires/nom-benificiair/{nomBenificiair}/client-num/{numIdent}")
-    public Benificiaire getBenificiaireByNomBenificiairAndNumClient(@PathVariable String nomBenificiair,@PathVariable String numIdent) {
-        return benificiaireService.getBenificiairBynomAndNumClient(nomBenificiair,numIdent);
+    public Benificiaire getBenificiaireByNomBenificiairAndNumClient(@PathVariable String nomBenificiair, @PathVariable String numIdent) {
+        return benificiaireService.getBenificiairBynomAndNumClient(nomBenificiair, numIdent);
     }
+
 }

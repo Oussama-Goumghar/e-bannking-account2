@@ -27,16 +27,22 @@ public class BenificiaireService {
     private ClientRepository clientRepository;
 
 
-    public Benificiaire saveBenificiaire(Kyc kyc,String numClient)
+    public int saveBenificiaire(Kyc kyc,String numClient)
     {
-        kycService.saveKyc(kyc);
-        Benificiaire benificiaire = new Benificiaire();
-        benificiaire.setKyc(kyc);
-        Client client = clientRepository.findClientByKyc_NumIdentite(numClient);
-        if (client != null) {
-            benificiaire.setClient(client);
+        if (benificiaireRepository.findBenificiaireByKyc_Nom(kyc.getNumIdentite()).isPresent()) {
+            return -1;
+        } else {
+            kycService.saveKyc(kyc);
+            Benificiaire benificiaire = new Benificiaire();
+            benificiaire.setKyc(kyc);
+            Client client = clientRepository.findClientByKyc_NumIdentite(numClient);
+            if (client != null) {
+                benificiaire.setClient(client);
+            }
+             benificiaireRepository.save(benificiaire);
+            return 1;
         }
-        return benificiaireRepository.save(benificiaire);
+
     }
 
     public Benificiaire updateBenificiare(Benificiaire benificiaire)
@@ -93,6 +99,16 @@ public class BenificiaireService {
         benificiaireRepository.delete(benificiaire);
     }
 
+    public int deleteById(Long id) {
+        Optional<Benificiaire> benificiaire = benificiaireRepository.findBenificiaireById(id);
+        if (benificiaire.isPresent()) {
+            benificiaireRepository.delete(benificiaire.get());
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+
     public List<Benificiaire> getListOfBenificiairsBynumClient(String numIdentityClient) {
         return benificiaireRepository.findBenificiairesByClient_Kyc_NumIdentite(numIdentityClient);
     }
@@ -101,4 +117,5 @@ public class BenificiaireService {
         Optional<Benificiaire> benificiaire=benificiaireRepository.findBenificiaireByKyc_NomAndClient_Kyc_NumIdentite(nomBenificiair, numClient);
         return benificiaire.orElse(null);
     }
+
 }
