@@ -28,17 +28,24 @@ public class ClientService {
     @Autowired
     private BenificiaireService benificiaireService;
 
-    public Client saveClient(Kyc kyc,String refAge)
+    public int saveClient(Kyc kyc,String refAge)
     {
-        Agence agence = agenceService.getAgenceByRef(refAge);
+        Client clientCheck = clientRepository.findClientByKyc_NumIdentite(kyc.getNumIdentite());
+        if (clientCheck != null) {
+            return -1;
+        } else {
+            Agence agence = agenceService.getAgenceByRef(refAge);
 
-        Client client = new Client();
-        kycService.saveKyc(kyc);
-        client.setKyc(kyc);
-        client.setAgence(agence);
-        Compte compte = compteService.createAccountClient();
-        client.setCompteClient(compte);
-        return clientRepository.save(client);
+            Client client = new Client();
+            kycService.saveKyc(kyc);
+            client.setKyc(kyc);
+            client.setAgence(agence);
+            Compte compte = compteService.createAccountClient();
+            client.setCompteClient(compte);
+             clientRepository.save(client);
+            return 1;
+        }
+
     }
 
     public void ajouterCompte(Compte compte,String numIdent)

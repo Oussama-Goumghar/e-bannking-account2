@@ -55,16 +55,10 @@ public class ClientResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/clients/{refAgence}")
-    public ResponseEntity<Client> createClient(
+    public int createClient(
         @PathVariable String refAgence,
         @Valid @RequestBody Kyc kyc) throws URISyntaxException {
-        log.debug("REST request to save Client : {}", kyc);
-
-        Client result = clientService.saveClient(kyc,refAgence);
-        return ResponseEntity
-            .created(new URI("/api/clients/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+         return clientService.saveClient(kyc,refAgence);
     }
 
     @PostMapping("/clients/comptes/{numIdent}")
