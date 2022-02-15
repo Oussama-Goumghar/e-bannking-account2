@@ -89,5 +89,31 @@ public class ClientService {
         return clientRepository.findClientByKyc_NumIdentite(numIdent);
     }
 
+    public int creditCompteClient(String numIdentifiant,double montant) {
+        Client client=clientRepository.findClientByKyc_NumIdentite(numIdentifiant);
+        if (client == null) {
+            return 1;
+        } else {
+            client.getCompteClient().setSolde(client.getCompteClient().getSolde() + montant);
+            clientRepository.save(client);
+            return 1;
+        }
+    }
+
+    public int debiteCompteClient(String numIdentifiant,double montant) {
+        Client client=clientRepository.findClientByKyc_NumIdentite(numIdentifiant);
+        if (client == null) {
+            return -1;
+        } else {
+            if (client.getCompteClient().getSolde() < montant) {
+                return -2;
+            } else {
+                client.getCompteClient().setSolde(client.getCompteClient().getSolde() - montant);
+                clientRepository.save(client);
+                return 1;
+            }
+        }
+    }
+
 
 }

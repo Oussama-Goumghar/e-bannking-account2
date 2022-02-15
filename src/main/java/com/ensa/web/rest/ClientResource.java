@@ -15,6 +15,8 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import liquibase.pro.packaged.P;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,20 +60,20 @@ public class ClientResource {
     public int createClient(
         @PathVariable String refAgence,
         @Valid @RequestBody Kyc kyc) throws URISyntaxException {
-         return clientService.saveClient(kyc,refAgence);
+        return clientService.saveClient(kyc, refAgence);
     }
 
     @PostMapping("/clients/comptes/{numIdent}")
     public ResponseEntity<Compte> addAccountToClient(@PathVariable String numIdent,
-                                                     @RequestBody Compte compte){
-        clientService.ajouterCompte(compte,numIdent);
+                                                     @RequestBody Compte compte) {
+        clientService.ajouterCompte(compte, numIdent);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/clients/beneficiares/{numIdentBenif}/{numIdent}")
     public ResponseEntity<Client> addAccountToClient(@PathVariable String numIdentBenif,
-                                                     @PathVariable String numIdent){
-        benificiaireService.ajoutBenifToClient(numIdentBenif,numIdent);
+                                                     @PathVariable String numIdent) {
+        benificiaireService.ajoutBenifToClient(numIdentBenif, numIdent);
         return ResponseEntity.ok().build();
     }
 
@@ -97,12 +99,23 @@ public class ClientResource {
     }
 
     @DeleteMapping("/clients/{numIdent}/{rib}")
-    public ResponseEntity<Void> deleteClient(@PathVariable String numIdent,@PathVariable String rib ) {
-        log.debug("REST request to delete Client : {}", numIdent,rib);
-        clientService.suppCompte(numIdent,rib);
+    public ResponseEntity<Void> deleteClient(@PathVariable String numIdent, @PathVariable String rib) {
+        log.debug("REST request to delete Client : {}", numIdent, rib);
+        clientService.suppCompte(numIdent, rib);
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, rib.toString()))
             .build();
     }
+
+    @GetMapping("/clients/credit-compte/num-client/{numClient}/montant/{montant}")
+    public int crediteCompteClient(@PathVariable String numClient, @PathVariable double montant) {
+        return clientService.creditCompteClient(numClient, montant);
+    }
+
+    @GetMapping("/clients/debit-compte/num-client/{numClient}/montant/{montant}")
+    public int debitCompteClient(@PathVariable String numClient, @PathVariable double montant) {
+        return clientService.debiteCompteClient(numClient, montant);
+    }
+
 }
